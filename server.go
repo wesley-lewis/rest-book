@@ -10,7 +10,7 @@ import (
 
 type Server struct {
 	address			string 
-	store			storage.Store
+	store			storage.Store // Storage Dependency
 }
 
 func NewServer(address string ) *Server {
