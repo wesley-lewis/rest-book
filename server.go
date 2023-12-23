@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"rest-book/model"
 	"rest-book/storage"
 
@@ -14,10 +15,14 @@ type Server struct {
 }
 
 func NewServer(address string ) *Server {
+	uri := os.Getenv("MONGO_URI")
+	store := storage.NewMongoStore(uri)
+	store.RestaurantCollection("rest-book", "restaurant_details")
+
 	return &Server {
 		address: address, 
-		// store : storage.NewMongoStore(""),
-		store: storage.NewMemoryStore(),
+		store: store,
+		// store: storage.NewMemoryStore(),
 	}
 }
 
@@ -54,7 +59,9 @@ func(s *Server) AddRestaurantDetails(c *fiber.Ctx) error {
 	if err := c.BodyParser(rest); err != nil {
 		return c.Status(fiber.StatusBadRequest).Send([]byte(err.Error()))
 	}
-	s.store.AddRestaurantDetails(rest)
+	if err := s.store.AddRestaurantDetails(rest); err != nil {
+		return c.Status(fiber.StatusBadRequest).Send([]byte(err.Error()))
+	}
 
 	return c.Status(fiber.StatusOK).JSON(rest)
 }
