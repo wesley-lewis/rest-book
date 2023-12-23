@@ -14,6 +14,10 @@ func NewMongoStore(uri string) Store {
 	}
 }
 
-func (m *MongoStore) GetRestaurantDetails(id string) *model.Restaurant {
+func (m *MongoStore) GetRestaurantDetails(id string) (*model.Restaurant, error) {
+	return nil, nil
+}
+
+func(m *MongoStore) AddRestaurantDetails(*model.Restaurant) error {
 	return nil
 }
