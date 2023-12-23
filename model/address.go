@@ -7,5 +7,4 @@ type Address struct {
 	Town			string		`json:"town"`
 	City			string		`json:"city"`
 	State			string		`json:"state"`
-	Timing			*Timing		`json:"timing"`
 }
