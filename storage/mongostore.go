@@ -68,3 +68,12 @@ func(m *MongoStore) AddRestaurantDetails(rest *model.Restaurant) error {
 	_, err := m.restaurantCol.InsertOne(ctx, rest)
 	return err
 }
+
+func(m *MongoStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	defer cancel()
+
+	result, err := m.restaurantCol.UpdateByID(ctx, id, rest)
+	log.Println("INFO: Update Result:",result)
+	return err
+}

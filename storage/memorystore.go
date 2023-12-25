@@ -29,3 +29,7 @@ func(m *MemoryStore) AddRestaurantDetails(rest *model.Restaurant) error {
 	m.Restaurants = append(m.Restaurants, rest)
 	return nil
 }
+
+func(m *MemoryStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) error {
+	return nil
+}

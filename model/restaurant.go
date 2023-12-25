@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 type Restaurant struct {
-	Id			string		`json:"id"`
+	Id			string		`json:"_id"`
 	Email		string		`json:"email"`
 	Name		string		`json:"name_of_restaurant"`
 	Address		*Address	`json:"address"`	

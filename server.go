@@ -32,6 +32,7 @@ func (s *Server) Start() {
 
 	// Handlers
 	v1.Get("/restaurant/:id", s.GetRestaurantDetailsById)
+	v1.Put("/restaurant/:id", s.UpdateRestaurantDetails)
 	v1.Post("/restaurant", s.AddRestaurantDetails)
 
 	if err := app.Listen(":8000"); err != nil {
@@ -64,4 +65,19 @@ func(s *Server) AddRestaurantDetails(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(rest)
+}
+
+func(s *Server) UpdateRestaurantDetails(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	rest := &model.Restaurant{}
+	if err := c.BodyParser(rest); err != nil {
+		return c.Status(fiber.StatusBadRequest).Send([]byte(err.Error()))
+	}
+
+	if err := s.store.UpdateRestaurantDetails(id, rest); err != nil {
+		return c.Status(fiber.StatusBadRequest).Send([]byte(err.Error()))
+	}
+
+	return c.Status(fiber.StatusOK).Send([]byte("success"))
 }

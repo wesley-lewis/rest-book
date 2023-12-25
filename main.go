@@ -9,3 +9,5 @@ func main() {
 	
 	s.Start()
 }
+
+// TODO: Learn about updating stuff in mongodb
