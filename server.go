@@ -31,6 +31,7 @@ func (s *Server) Start() {
 	v1 := app.Group("api/v1")
 
 	// Handlers
+	v1.Get("/restaurant", s.GetAllRestaurantDetails)
 	v1.Get("/restaurant/:id", s.GetRestaurantDetailsById)
 	v1.Put("/restaurant/:id", s.UpdateRestaurantDetails)
 	v1.Post("/restaurant", s.AddRestaurantDetails)
@@ -52,6 +53,15 @@ func ( s *Server) GetRestaurantDetailsById(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(rest)
+}
+
+func(s *Server) GetAllRestaurantDetails(c *fiber.Ctx) error {
+	rests, err := s.store.GetAllRestaurantDetails()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).Send([]byte(err.Error()))
+	}
+
+	return c.Status(fiber.StatusOK).JSON(rests)
 }
 
 func(s *Server) AddRestaurantDetails(c *fiber.Ctx) error {

@@ -33,3 +33,7 @@ func(m *MemoryStore) AddRestaurantDetails(rest *model.Restaurant) error {
 func(m *MemoryStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) error {
 	return nil
 }
+
+func(m *MemoryStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
+	return m.Restaurants, nil
+}

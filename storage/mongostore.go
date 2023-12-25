@@ -77,3 +77,22 @@ func(m *MongoStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) e
 	log.Println("INFO: Update Result:",result)
 	return err
 }
+
+func(m *MongoStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	defer cancel()
+
+	filter := bson.M{}
+	cursor, err := m.restaurantCol.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	rests := []*model.Restaurant{}
+	for cursor.Next(context.Background()) {
+		rest := new(model.Restaurant)
+		cursor.Decode(rest)
+		rests = append(rests, rest)
+	}
+	return rests, nil
+}
