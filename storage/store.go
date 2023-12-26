@@ -8,4 +8,5 @@ type Store interface {
 	AddRestaurantDetails(*model.Restaurant)				error
 	UpdateRestaurantDetails(string, *model.Restaurant)	(error)
 	GetAllRestaurantDetails()							([]*model.Restaurant, error)
+	DeleteRestaurantDetails(string)						(error) 
 }

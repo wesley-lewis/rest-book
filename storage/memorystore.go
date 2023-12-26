@@ -37,3 +37,16 @@ func(m *MemoryStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) 
 func(m *MemoryStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
 	return m.Restaurants, nil
 }
+
+func(m *MemoryStore) DeleteRestaurantDetails(id string) (error) {
+	idx, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+	if idx > len(m.Restaurants) - 1 {
+		return fmt.Errorf("no restaurant")
+	}
+
+	m.Restaurants = nil
+	return nil
+}

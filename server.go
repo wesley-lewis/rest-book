@@ -34,6 +34,7 @@ func (s *Server) Start() {
 	v1.Get("/restaurant", s.GetAllRestaurantDetails)
 	v1.Get("/restaurant/:id", s.GetRestaurantDetailsById)
 	v1.Put("/restaurant/:id", s.UpdateRestaurantDetails)
+	v1.Delete("/restaurant/:id", s.DeleteRestaurantDetails)
 	v1.Post("/restaurant", s.AddRestaurantDetails)
 
 	if err := app.Listen(":8000"); err != nil {
@@ -90,4 +91,14 @@ func(s *Server) UpdateRestaurantDetails(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).Send([]byte("success"))
+}
+
+func(s *Server) DeleteRestaurantDetails(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	if err := s.store.DeleteRestaurantDetails(id); err != nil {
+		return c.Status(fiber.StatusOK).Send([]byte(err.Error()))
+	}
+
+	return c.Status(fiber.StatusOK).Send([]byte("deleted " + id))
 }

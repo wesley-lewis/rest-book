@@ -5,7 +5,6 @@ import (
 	"log"
 	"rest-book/model"
 	"time"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -95,4 +94,18 @@ func(m *MongoStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
 		rests = append(rests, rest)
 	}
 	return rests, nil
+}
+
+func(m *MongoStore) DeleteRestaurantDetails(id string) (error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+	defer cancel() 
+
+	filter := bson.M{"_id": id}
+	res, err := m.restaurantCol.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+	log.Println("INFO: Deleted Result:", *res)
+
+	return nil
 }
