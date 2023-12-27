@@ -5,7 +5,9 @@ import (
 	"log"
 	"rest-book/model"
 	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -77,7 +79,7 @@ func(m *MongoStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) e
 	return err
 }
 
-func(m *MongoStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
+func(m *MongoStore) GetAllRestaurantDetails() ([]*model.RestaurantDb, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
 	defer cancel()
 
@@ -87,9 +89,9 @@ func(m *MongoStore) GetAllRestaurantDetails() ([]*model.Restaurant, error) {
 		return nil, err
 	}
 
-	rests := []*model.Restaurant{}
+	rests := []*model.RestaurantDb{}
 	for cursor.Next(context.Background()) {
-		rest := new(model.Restaurant)
+		rest := new(model.RestaurantDb)
 		cursor.Decode(rest)
 		rests = append(rests, rest)
 	}
@@ -100,12 +102,17 @@ func(m *MongoStore) DeleteRestaurantDetails(id string) (error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
 	defer cancel() 
 
-	filter := bson.M{"_id": id}
+	primID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	filter := bson.M{"_id": primID}
+	// res := m.restaurantCol.FindOneAndDelete(ctx, filter)
 	res, err := m.restaurantCol.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
-	log.Println("INFO: Deleted Result:", *res)
+	log.Println("INFO: Deleted Result:", res.DeletedCount)
 
 	return nil
 }
