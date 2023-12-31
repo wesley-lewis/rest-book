@@ -13,9 +13,10 @@ import (
 )
 
 type MongoStore struct {
-	uri				string 
-	Client			*mongo.Client
+	uri						string 
+	Client				*mongo.Client
 	restaurantCol	*mongo.Collection
+	userCol				*mongo.Collection
 }
 
 func (m *MongoStore) Connect() (*mongo.Client, error) {
@@ -29,6 +30,10 @@ func (m *MongoStore) Connect() (*mongo.Client, error) {
 
 func(m *MongoStore) RestaurantCollection(databaseName, collectionName string) {
 	m.restaurantCol = m.Client.Database(databaseName).Collection(collectionName)
+}
+
+func(m *MongoStore) UserCollection(databaseName, collectionName string) {
+	m.userCol = m.Client.Database(databaseName).Collection(collectionName)
 }
 
 func NewMongoStore(uri string) *MongoStore {
@@ -115,4 +120,39 @@ func(m *MongoStore) DeleteRestaurantDetails(id string) (error) {
 	log.Println("INFO: Deleted Result:", res.DeletedCount)
 
 	return nil
+}
+
+func(m *MongoStore) AddUser(user *model.User) (primitive.ObjectID, error) {
+	ctx,cancel := context.WithTimeout(context.Background(), time.Second * 10)
+	defer cancel()
+	
+	res, err := m.userCol.InsertOne(ctx, user)
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+	log.Println("INFO: Inserted into User Collection ->", res.InsertedID)
+	return res.InsertedID.(primitive.ObjectID), nil
+}
+
+func(m *MongoStore) GetUsers() ([]*model.UserDb, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+	defer cancel() 
+
+	users := []*model.UserDb{}
+	filter := bson.M{}
+
+	cursor, err := m.userCol.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	for cursor.Next(context.Background()) {
+		user := &model.UserDb{}
+
+		if err := cursor.Decode(user); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
 }
