@@ -1,13 +1,13 @@
 package main
 
-import "github.com/joho/godotenv"
-
+import (
+	"github.com/joho/godotenv"
+	"rest-book/api"
+)
 
 func main() {
 	godotenv.Load()
-	s := NewServer(":8000")
+	s := api.NewServer(":8000")
 	
 	s.Start()
 }
-
-// TODO: Learn about updating stuff in mongodb
