@@ -13,4 +13,5 @@ type Store interface {
 	DeleteRestaurantDetails(string)				(error) 
 	AddUser(*model.User)									(primitive.ObjectID, error)
 	GetUsers()														([]*model.UserDb, error)
+	UpdateUser(string, *model.User)				(error)
 }
