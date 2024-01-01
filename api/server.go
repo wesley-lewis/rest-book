@@ -18,6 +18,7 @@ func NewServer(address string ) *Server {
     store := storage.NewMongoStore(uri)
     store.RestaurantCollection("rest-book", "restaurant_details")
     store.UserCollection("rest-book", "user_details")
+    store.ProductCollection("rest-book", "items")
 
     return &Server {
         Address: address, 
@@ -41,8 +42,11 @@ func (s *Server) Start() {
     v1.Get("/user", s.GetUsers)
     v1.Put("/user/:id", s.UpdateUser)
 
+    // Handlers for Products
+    v1.Post("/item", s.AddItem)
+    v1.Get("/item", s.GetAllItems)
+
     if err := app.Listen(":8000"); err != nil {
         log.Fatal(err)
     }
 }
-
