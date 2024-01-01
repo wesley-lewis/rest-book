@@ -45,6 +45,23 @@ func(s *Server) UpdateUser(c *fiber.Ctx) error { user := &model.User{}
     return c.Status(fiber.StatusOK).JSON(struct{
         message string
     }{
-            message: "all good",
-        })
+        message: "all good",
+    })
+}
+
+func(s *Server) LoginUser(c *fiber.Ctx) error {
+    user := &model.User{}
+
+    if err := c.BodyParser(user); err != nil {
+        return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+    }
+
+    // TODO: 
+    // fetch user from db.
+    // do all the necessary checks.
+    return c.Status(fiber.StatusOK).JSON(struct{
+        message string
+    }{
+        message: "logged in user",
+    })
 }
