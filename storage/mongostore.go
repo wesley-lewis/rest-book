@@ -13,10 +13,11 @@ import (
 )
 
 type MongoStore struct {
-    uri						string 
-    Client				*mongo.Client
+    uri			string 
+    Client		*mongo.Client
     restaurantCol	*mongo.Collection
-    userCol				*mongo.Collection
+    userCol		*mongo.Collection
+    productCol          *mongo.Collection
 }
 
 func (m *MongoStore) Connect() (*mongo.Client, error) {
@@ -34,6 +35,10 @@ func(m *MongoStore) RestaurantCollection(databaseName, collectionName string) {
 
 func(m *MongoStore) UserCollection(databaseName, collectionName string) {
     m.userCol = m.Client.Database(databaseName).Collection(collectionName)
+}
+
+func(m *MongoStore) ProductCollection(databaseName, collectionName string) {
+    m.productCol = m.Client.Database(databaseName).Collection(collectionName)
 }
 
 func NewMongoStore(uri string) *MongoStore {
@@ -144,13 +149,13 @@ func(m *MongoStore) GetUsers() ([]*model.UserDb, error) {
     cursor, err := m.userCol.Find(ctx, filter)
     if err != nil {
         return nil, err
-}
+    }
 
-for cursor.Next(context.Background()) {
-user := &model.UserDb{}
+    for cursor.Next(context.Background()) {
+        user := &model.UserDb{}
 
-if err := cursor.Decode(user); err != nil {
-return nil, err
+        if err := cursor.Decode(user); err != nil {
+            return nil, err
         }
         users = append(users, user)
     }
@@ -171,4 +176,38 @@ func(m *MongoStore) UpdateUser(idStr string, user *model.User) error {
     }
     log.Println("INFO: Update Result:", res.UpsertedID)
     return err
+}
+
+func(m *MongoStore) AddProduct(product *model.Product) (primitive.ObjectID, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+    defer cancel() 
+
+    res, err := m.productCol.InsertOne(ctx, product)
+    if err != nil {
+        return primitive.NilObjectID, err
+    }
+    log.Println("INFO: Add Product:", res)
+    return res.InsertedID.(primitive.ObjectID), nil
+}
+
+func(m *MongoStore) GetAllProducts() ([]*model.Product, error) {
+    ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+    defer cancel() 
+    
+    filter := bson.M{}
+    cursor, err := m.productCol.Find(ctx, filter)
+    if err != nil {
+        return nil, err
+    }
+
+    products := []*model.Product{}
+    for cursor.Next(context.Background()) {
+        product := &model.Product{}
+        if err := cursor.Decode(product); err != nil {
+            return nil, err
+        }
+        products = append(products, product) 
+    }
+    
+    return products, nil
 }

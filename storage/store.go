@@ -14,4 +14,5 @@ type Store interface {
 	AddUser(*model.User)									(primitive.ObjectID, error)
 	GetUsers()														([]*model.UserDb, error)
 	UpdateUser(string, *model.User)				(error)
+	AddProduct(*model.Product)						(error)
 }
