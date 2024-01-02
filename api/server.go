@@ -40,6 +40,7 @@ func (s *Server) Start() {
     // Handlers for Users
     v1.Post("/user", s.CreateUser)
     v1.Get("/user", s.GetUsers)
+    v1.Delete("/user/:id", s.DeleteUser)
     v1.Put("/user/:id", s.UpdateUser)
     v1.Post("/user/login", s.LoginUser)
 

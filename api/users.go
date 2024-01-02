@@ -1,7 +1,6 @@
 package api
 
 import (
-	"log"
 	"rest-book/model"
 
 	"github.com/gofiber/fiber/v2"
@@ -81,4 +80,13 @@ func(s *Server) LoginUser(c *fiber.Ctx) error {
         Message: "logged in user",
         Success: true,
     })
+}
+
+func(s *Server) DeleteUser(c *fiber.Ctx) error {
+    id := c.Params("id")
+
+    if err := s.Store.DeleteUser(id); err != nil {
+        return err
+    }
+    return c.Status(fiber.StatusOK).SendString("Deleted user: " + id)
 }
