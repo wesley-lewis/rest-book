@@ -66,6 +66,7 @@ func (m *MongoStore) GetRestaurantDetails(email string) (*model.Restaurant, erro
     }
 
     if err != nil {
+        log.Println("ERROR:", err)
         return nil, err
     }
 
@@ -77,6 +78,9 @@ func(m *MongoStore) AddRestaurantDetails(rest *model.Restaurant) error {
     defer cancel()
 
     _, err := m.restaurantCol.InsertOne(ctx, rest)
+    if err != nil {
+        log.Println("ERROR:", err)
+    }
     return err
 }
 
@@ -85,7 +89,10 @@ func(m *MongoStore) UpdateRestaurantDetails(id string, rest *model.Restaurant) e
     defer cancel()
 
     result, err := m.restaurantCol.UpdateByID(ctx, id, rest)
-    log.Println("INFO: Update Result:",result)
+    if err != nil {
+        log.Println("INFO: Update Result:",result)
+        log.Println("ERROR:", err)
+    }
     return err
 }
 
@@ -96,6 +103,7 @@ func(m *MongoStore) GetAllRestaurantDetails() ([]*model.RestaurantDb, error) {
     filter := bson.M{}
     cursor, err := m.restaurantCol.Find(ctx, filter)
     if err != nil {
+        log.Println("ERROR:", err)
         return nil, err
     }
 
@@ -114,12 +122,14 @@ func(m *MongoStore) DeleteRestaurantDetails(id string) (error) {
 
     primID, err := primitive.ObjectIDFromHex(id)
     if err != nil {
+        log.Println("ERROR:", err)
         return err
     }
     filter := bson.M{"_id": primID}
     // res := m.restaurantCol.FindOneAndDelete(ctx, filter)
     res, err := m.restaurantCol.DeleteOne(ctx, filter)
     if err != nil {
+        log.Println("ERROR:", err)
         return err
     }
     log.Println("INFO: Deleted Result:", res.DeletedCount)
@@ -133,6 +143,7 @@ func(m *MongoStore) AddUser(user *model.User) (primitive.ObjectID, error) {
 
     res, err := m.userCol.InsertOne(ctx, user)
     if err != nil {
+        log.Println("ERROR:", err)
         return primitive.NilObjectID, err
     }
     log.Println("INFO: Inserted into User Collection ->", res.InsertedID)
@@ -148,6 +159,7 @@ func(m *MongoStore) GetUsers() ([]*model.UserDb, error) {
 
     cursor, err := m.userCol.Find(ctx, filter)
     if err != nil {
+        log.Println("ERROR:", err)
         return nil, err
     }
 
@@ -155,6 +167,7 @@ func(m *MongoStore) GetUsers() ([]*model.UserDb, error) {
         user := &model.UserDb{}
 
         if err := cursor.Decode(user); err != nil {
+            log.Println("ERROR:", err)
             return nil, err
         }
         users = append(users, user)
@@ -169,11 +182,13 @@ func(m *MongoStore) GetUserByEmail(email string) (*model.UserDb, error) {
 
     cur, err := m.userCol.Find(ctx, filter)
     if err != nil {
+        log.Println("ERROR:", err)
         return nil, err
     }
     user := &model.UserDb{}
     if cur.Next(context.Background()) {
         if err := cur.Decode(user);err != nil {
+            log.Println("ERROR:", err)
             return nil, err
         }
     }
@@ -187,9 +202,24 @@ func(m *MongoStore) UpdateUser(idStr string, user *model.User) error {
 
     res, err := m.userCol.UpdateByID(ctx, idStr, user)
     if err != nil {
+        log.Println("ERROR:", err)
         return err
     }
     log.Println("INFO: Update Result:", res.UpsertedID)
+    return err
+}
+
+func(m *MongoStore) DeleteUser(id string) (error) {
+    ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
+    defer cancel()
+
+    objId, _ := primitive.ObjectIDFromHex(id)
+    filter := bson.M{"_id": objId}
+    res, err := m.userCol.DeleteOne(ctx, filter)
+    if err != nil {
+        log.Println("ERROR:", err)
+        log.Println("INFO: Deleted user result:", res.DeletedCount)
+    }
     return err
 }
 
@@ -199,6 +229,7 @@ func(m *MongoStore) AddProduct(product *model.Product) (primitive.ObjectID, erro
 
     res, err := m.productCol.InsertOne(ctx, product)
     if err != nil {
+        log.Println("ERROR:", err)
         return primitive.NilObjectID, err
     }
     log.Println("INFO: Add Product:", res)
@@ -212,6 +243,7 @@ func(m *MongoStore) GetAllProducts() ([]*model.Product, error) {
     filter := bson.M{}
     cursor, err := m.productCol.Find(ctx, filter)
     if err != nil {
+        log.Println("ERROR:", err)
         return nil, err
     }
 
@@ -219,6 +251,7 @@ func(m *MongoStore) GetAllProducts() ([]*model.Product, error) {
     for cursor.Next(context.Background()) {
         product := &model.Product{}
         if err := cursor.Decode(product); err != nil {
+            log.Println("ERROR:", err)
             return nil, err
         }
         products = append(products, product) 

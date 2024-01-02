@@ -28,5 +28,10 @@ func (s *Server) AddItem(c *fiber.Ctx) error {
 }
 
 func(s *Server) GetAllItems(c *fiber.Ctx) error {
-    return c.Status(fiber.StatusOK).SendString("products")
+    products, err := s.Store.GetAllProducts()
+    if err != nil {
+        return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+    }
+
+    return c.Status(fiber.StatusOK).JSON(products)
 }
