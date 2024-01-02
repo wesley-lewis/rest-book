@@ -7,13 +7,13 @@ import (
 )
 
 func (s *Server) AddItem(c *fiber.Ctx) error {
-    product := &model.Product{}
+    product := &model.Item{}
 
     if err := c.BodyParser(product); err != nil {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
 
-    id, err := s.Store.AddProduct(product) 
+    id, err := s.Store.AddItem(product) 
     if err != nil {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
@@ -28,7 +28,7 @@ func (s *Server) AddItem(c *fiber.Ctx) error {
 }
 
 func(s *Server) GetAllItems(c *fiber.Ctx) error {
-    products, err := s.Store.GetAllProducts()
+    products, err := s.Store.GetAllItems()
     if err != nil {
         return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
     }

@@ -223,7 +223,7 @@ func(m *MongoStore) DeleteUser(id string) (error) {
     return err
 }
 
-func(m *MongoStore) AddProduct(product *model.Product) (primitive.ObjectID, error) {
+func(m *MongoStore) AddItem(product *model.Item) (primitive.ObjectID, error) {
     ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
     defer cancel() 
 
@@ -232,11 +232,11 @@ func(m *MongoStore) AddProduct(product *model.Product) (primitive.ObjectID, erro
         log.Println("ERROR:", err)
         return primitive.NilObjectID, err
     }
-    log.Println("INFO: Add Product:", res)
+    log.Println("INFO: Add Item:", res)
     return res.InsertedID.(primitive.ObjectID), nil
 }
 
-func(m *MongoStore) GetAllProducts() ([]*model.Product, error) {
+func(m *MongoStore) GetAllItems() ([]*model.Item, error) {
     ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
     defer cancel() 
     
@@ -247,9 +247,9 @@ func(m *MongoStore) GetAllProducts() ([]*model.Product, error) {
         return nil, err
     }
 
-    products := []*model.Product{}
+    products := []*model.Item{}
     for cursor.Next(context.Background()) {
-        product := &model.Product{}
+        product := &model.Item{}
         if err := cursor.Decode(product); err != nil {
             log.Println("ERROR:", err)
             return nil, err
