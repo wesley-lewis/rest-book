@@ -162,13 +162,28 @@ func(m *MongoStore) GetUsers() ([]*model.UserDb, error) {
     return users, nil
 }
 
+func(m *MongoStore) GetUserByEmail(email string) (*model.UserDb, error) {
+    filter := bson.M{"email": email}
+    ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10) 
+    defer cancel()
+
+    cur, err := m.userCol.Find(ctx, filter)
+    if err != nil {
+        return nil, err
+    }
+    user := &model.UserDb{}
+    if cur.Next(context.Background()) {
+        if err := cur.Decode(user);err != nil {
+            return nil, err
+        }
+    }
+
+    return user, nil
+}
+
 func(m *MongoStore) UpdateUser(idStr string, user *model.User) error {
     ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
     defer cancel() 
-    // id, err := primitive.ObjectIDFromHex(idStr)
-    // if err != nil {
-    // 	return err
-    // }
 
     res, err := m.userCol.UpdateByID(ctx, idStr, user)
     if err != nil {

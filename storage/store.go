@@ -13,6 +13,7 @@ type Store interface {
 	DeleteRestaurantDetails(string)				(error) 
 	AddUser(*model.User)									(primitive.ObjectID, error)
 	GetUsers()														([]*model.UserDb, error)
+	GetUserByEmail(string)								(*model.UserDb, error)
 	UpdateUser(string, *model.User)				(error)
-	AddProduct(*model.Product)						(error)
+	AddProduct(*model.Product)						(primitive.ObjectID, error)
 }
