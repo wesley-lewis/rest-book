@@ -17,3 +17,8 @@ type UserDb struct {
     Email     string `json:"email"`
     Phone     string `json:"mobile_no"`
 }
+
+// TODO: password to be added
+type UserLogin struct {
+    Email	string	`json:"email"`
+}
