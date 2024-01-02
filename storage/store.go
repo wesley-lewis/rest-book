@@ -6,14 +6,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 type Store interface {
-	GetRestaurantDetails(string)					(*model.Restaurant, error )
+	GetRestaurantDetails(string)						(*model.Restaurant, error )
 	AddRestaurantDetails(*model.Restaurant)				error
 	UpdateRestaurantDetails(string, *model.Restaurant)	(error)
 	GetAllRestaurantDetails()							([]*model.RestaurantDb, error)
-	DeleteRestaurantDetails(string)				(error) 
-	AddUser(*model.User)									(primitive.ObjectID, error)
-	GetUsers()														([]*model.UserDb, error)
+	DeleteRestaurantDetails(string)						(error) 
+	AddUser(*model.User)								(primitive.ObjectID, error)
+	GetUsers()											([]*model.UserDb, error)
 	GetUserByEmail(string)								(*model.UserDb, error)
-	UpdateUser(string, *model.User)				(error)
-	AddProduct(*model.Product)						(primitive.ObjectID, error)
+	UpdateUser(string, *model.User)						(error)
+	DeleteUser(string)									(error)
+	AddItem(*model.Product)							(primitive.ObjectID, error)
+	GetAllItems()									([]*model.Product, error)
 }
