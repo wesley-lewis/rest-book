@@ -47,6 +47,7 @@ func (s *Server) Start() {
     // Handlers for Products
     v1.Post("/item", s.AddItem)
     v1.Get("/item", s.GetAllItems)
+    v1.Delete("/item/:id", s.DeleteItem)
 
     if err := app.Listen(":8000"); err != nil {
         log.Fatal(err)

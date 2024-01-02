@@ -17,5 +17,6 @@ type Store interface {
 	UpdateUser(string, *model.User)						(error)
 	DeleteUser(string)									(error)
 	AddItem(*model.Item)								(primitive.ObjectID, error)
-	GetAllItems()										([]*model.Item, error)
+	GetAllItems()										([]*model.ItemDb, error)
+	DeleteItem(string)									(error)
 }

@@ -35,3 +35,13 @@ func(s *Server) GetAllItems(c *fiber.Ctx) error {
 
     return c.Status(fiber.StatusOK).JSON(products)
 }
+
+func(s *Server) DeleteItem(c *fiber.Ctx) error {
+    id := c.Params("id")
+
+    if err := s.Store.DeleteItem(id); err != nil {
+        return c.Status(fiber.StatusInternalServerError).SendString(err.Error()) 
+    }
+
+    return c.SendStatus(fiber.StatusOK)
+}

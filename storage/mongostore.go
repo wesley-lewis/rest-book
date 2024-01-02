@@ -236,7 +236,7 @@ func(m *MongoStore) AddItem(product *model.Item) (primitive.ObjectID, error) {
     return res.InsertedID.(primitive.ObjectID), nil
 }
 
-func(m *MongoStore) GetAllItems() ([]*model.Item, error) {
+func(m *MongoStore) GetAllItems() ([]*model.ItemDb, error) {
     ctx, cancel := context.WithTimeout(context.Background(), time.Second * 10)
     defer cancel() 
     
@@ -247,9 +247,9 @@ func(m *MongoStore) GetAllItems() ([]*model.Item, error) {
         return nil, err
     }
 
-    products := []*model.Item{}
+    products := []*model.ItemDb{}
     for cursor.Next(context.Background()) {
-        product := &model.Item{}
+        product := &model.ItemDb{}
         if err := cursor.Decode(product); err != nil {
             log.Println("ERROR:", err)
             return nil, err
@@ -258,4 +258,18 @@ func(m *MongoStore) GetAllItems() ([]*model.Item, error) {
     }
     
     return products, nil
+}
+
+func(m *MongoStore) DeleteItem(idStr string) error {
+    ctx, cancel := context.WithTimeout(context.Background(), time.Second * 5)
+    defer cancel()
+
+    id, _ := primitive.ObjectIDFromHex(idStr)
+    filter := bson.M{"_id": id}
+    res,err := m.productCol.DeleteOne(ctx, filter)
+    if err != nil {
+        return err
+    }
+    log.Println("INFO: Deleted User:", id, " Count:", res.DeletedCount)
+    return nil
 }
