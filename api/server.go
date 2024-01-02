@@ -41,6 +41,7 @@ func (s *Server) Start() {
     v1.Post("/user", s.CreateUser)
     v1.Get("/user", s.GetUsers)
     v1.Put("/user/:id", s.UpdateUser)
+    v1.Post("/user/login", s.LoginUser)
 
     // Handlers for Products
     v1.Post("/item", s.AddItem)

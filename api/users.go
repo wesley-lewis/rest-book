@@ -1,9 +1,10 @@
 package api
 
 import (
-    "rest-book/model"
+	"log"
+	"rest-book/model"
 
-    "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 )
 
 func (s *Server) CreateUser(c *fiber.Ctx) error {
@@ -14,7 +15,6 @@ func (s *Server) CreateUser(c *fiber.Ctx) error {
     }
 
     id, err := s.Store.AddUser(user)
-
     if err != nil {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
@@ -50,18 +50,35 @@ func(s *Server) UpdateUser(c *fiber.Ctx) error { user := &model.User{}
 }
 
 func(s *Server) LoginUser(c *fiber.Ctx) error {
-    user := &model.User{}
+    user := &model.UserLogin{}
 
     if err := c.BodyParser(user); err != nil {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
 
-    // TODO: 
-    // fetch user from db.
-    // do all the necessary checks.
+    if user.Email == "" {
+        return c.Status(fiber.StatusBadRequest).SendString("bad request")
+    }
+    dbUser, err := s.Store.GetUserByEmail(user.Email)
+    if err != nil {
+        return err
+    }
+
+    if user.Email != dbUser.Email {
+        return c.Status(fiber.StatusNonAuthoritativeInformation).JSON(struct {
+            Message string `json:"message"`
+            Success bool `json:"success"`
+        }{
+                Message: "failed",
+                Success: false,
+        })
+    }
+
     return c.Status(fiber.StatusOK).JSON(struct{
-        message string
+        Message string `json:"message"`
+        Success bool `json:"success"`
     }{
-        message: "logged in user",
+        Message: "logged in user",
+        Success: true,
     })
 }
