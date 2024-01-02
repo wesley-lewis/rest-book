@@ -13,14 +13,17 @@ func (s *Server) AddItem(c *fiber.Ctx) error {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
 
-    if err := s.Store.AddProduct(product); err != nil {
+    id, err := s.Store.AddProduct(product) 
+    if err != nil {
         return c.Status(fiber.StatusBadRequest).SendString(err.Error())
     }
 
     return c.Status(fiber.StatusOK).JSON(struct{
         message string
+        id      string
     }{
         message: "added product",
+        id: id.Hex(),
     })
 }
 
